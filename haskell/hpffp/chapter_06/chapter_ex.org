@@ -1,0 +1,83 @@
+* Multiple Choice
+
+** The Eq class
+   (c) makes equality tests possible
+
+** The typeclass Ord
+(c) is a subclass of Eq
+
+** Suppose the typeclass Ord has an operator >. What is the type of >?
+(a) Ord a => a -> a -> Bool
+
+** In x = divMod 16 12
+(c) the type of x is a tuple
+
+** The typeclass Integral includes
+(b) integral, real, and fractional numbers
+
+* Does it typecheck?
+
+** 1
+Given:
+
+#+BEGIN_SRC haskell
+data Person = Person Bool
+
+printPerson :: Person -> IO ()
+printPerson person = putStrLn (show person)
+#+END_SRC
+
+Fixed:
+
+#+BEGIN_SRC haskell
+data Person = Person Bool deriving Show
+
+printPerson :: Person -> IO ()
+printPerson person = putStrLn (show person)
+#+END_SRC
+
+** 2
+
+Given:
+
+#+BEGIN_SRC haskell
+data Mood = Blah
+          | Woot deriving Show
+
+settleDown x = if x == Woot
+                 then Blah
+                 else x
+#+END_SRC
+
+Because settleDown is of type Mood -> Mood, and tests argument equality, Mood must implement Eq
+
+Fixed:
+
+#+BEGIN_SRC haskell
+data Mood = Blah
+          | Woot deriving (Show, Eq)
+
+settleDown x = if x == Woot
+                 then Blah
+                 else x
+#+END_SRC
+
+** 3
+
+- only Mood is an acceptable input
+- settleDown 9 will give a type error because Mood does not implement Num (not sure I understand)
+- Blah > Woot will give a type error because Mood does not implement Ord
+** 4
+
+#+BEGIN_SRC haskell
+type Subject = String
+type Verb = String
+type Object = String
+
+data Sentence =
+  Sentence Subject Verb Object
+  deriving (Eq, Show)
+
+s1 = Sentence "dogs" "drool"
+s2 = Sentence "Julie" "loves" "dogs"
+#+END_SRC
