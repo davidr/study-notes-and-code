@@ -54,6 +54,9 @@ mflip f x y = f y x
 #+END_SRC
 * 7.4 Pattern Matching
 
+** Notes
+Pattern matching in data constructors:
+
 #+BEGIN_SRC haskell
   data WherePenguinsLive =
       Galapagos
@@ -75,5 +78,166 @@ mflip f x y = f y x
   gimmeWhereTheyLive (Peng whereitlives) =
     whereitlives
 
+  galapagosPenguin :: Penguin -> Bool
+  galapagosPenguin (Peng Galapagos) = True
+  galapagosPenguin _                = False
+
+  antarcticPenguin :: Penguin -> Bool
+  antarcticPenguin (Peng Antarctica) = True
+  antarcticPenguin _                 = False
+
+  antarcticOrGalapagos :: Penguin -> Bool
+  antarcticOrGalapagos p =
+       (galapagosPenguin p)
+    || (antarcticPenguin p)
 
 #+END_SRC
+
+Pattern matching tuples
+
+recall this from earlier type-kwon-do exercises:
+
+#+BEGIN_SRC haskell
+f :: (a, b) -> (c, d) -> ((b, d), (a, c))
+f x y = ((snd x, snd y), (fst x, fst y))
+#+END_SRC
+
+this can be rewritten more cleanly as:
+
+#+BEGIN_SRC haskell
+f :: (a, b) -> (c, d) -> ((b, d), (a, c))
+f (a, b) (c, d) = ((b, d), (a, c))
+#+END_SRC
+
+** Grab bag
+*** 1
+
+Given:
+
+#+BEGIN_SRC haskell
+k (x, y) = x
+k1 = k ((4-1), 10)
+k2 = k ("three", (1 + 2))
+k3 = k (3, True)
+#+END_SRC
+
+**** a)
+k is of type ~k :: (a, b) -> a~
+
+**** b)
+k2 is of type ~[Char]~
+
+**** c)
+k3 = 3
+
+*** 2.
+#+BEGIN_SRC haskell
+  -- Remember: Tuples have the same syntax for their
+  -- type constructors and
+  -- their data constructors.
+
+  f :: (a, b, c)
+    -> (d, e, f)
+    -> ((a, d), (c, f))
+
+  f (a, b, c) (d, e, f) =
+    ((a, d), (c, f))
+#+END_SRC
+
+* 7.5 Case Expressions
+
+** Ex, Case Practice
+*** 1.
+
+Given:
+#+BEGIN_SRC haskell
+functionC x y = if (x > y) then x else y
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+functionC' x y = case x > y of
+  True  -> x
+  False -> y
+#+END_SRC
+*** 2.
+
+Given:
+#+BEGIN_SRC haskell
+ifEvenAdd2 n = if even n then (n + 2) else n
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+ifEvenAdd2' n = case even n of
+  True  -> n + 2
+  False -> n
+#+END_SRC
+*** 3.
+
+Given:
+#+BEGIN_SRC haskell
+nums x = case compare x 0 of
+  LT -> -1
+  GT -> 1
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+nums' x = case compare x 0 of
+  LT -> -1
+  GT -> 1
+  _  -> 0
+#+END_SRC
+
+to cover all cases
+
+* 7.6 Higher-order functions
+
+Higher-order functions are functions that accept functions as arguments
+
+** Ex: Artful Dodgy
+
+Given:
+#+BEGIN_SRC haskell
+dodgy x y = x + y * 10
+oneIsOne = dodgy 1
+oneIsTwo = (flip dodgy) 2
+#+END_SRC
+
+Adding types, we get:
+#+BEGIN_SRC haskell
+dodgy :: Num a => a -> a -> a
+dodgy x y = x + y * 10
+
+oneIsOne = dodgy 1
+oneIsTwo = (flip dodgy) 2
+#+END_SRC
+
+*** 2.
+dodgy 1 1 = 11
+
+*** 3.
+dodgy 2 2 = 22
+
+*** 4.
+dodgy 1 2 = 21
+
+*** 5.
+dodgy  2 1 = 12
+
+*** 6.
+oneIsOne 1 = 11
+
+*** 7.
+oneIsOne 2 = 21
+
+*** 8.
+oneIsTwo 1 = 21
+
+*** 9.
+oneIsTwo 2 = 22
+
+*** ...
+
+* 7.7 Guards
