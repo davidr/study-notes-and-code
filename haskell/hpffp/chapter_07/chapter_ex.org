@@ -1,0 +1,79 @@
+* 7.3 Anonymous Functions
+** Grab bag
+*** 1
+These are all equivalent
+
+#+BEGIN_SRC haskell
+mTh x y z = x * y * z
+mTh x y = \z -> x * y * z
+mTh x = \y -> \z -> x * y * z
+mTh = \x -> \y -> \z -> x * y * z
+#+END_SRC
+*** 2
+
+~mTh 3~ is of type ~Num a => a -> a -> a~
+*** 3
+
+**** a)
+Given:
+#+BEGIN_SRC haskell
+addOneIfOdd n = case odd n of
+  True -> f n
+  False -> n
+  where f n = n + 1
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+addOneIfOdd n = case odd n of
+  True -> f n
+  False -> n
+  where f = \x -> x + 1
+#+END_SRC
+
+**** b)
+Given:
+#+BEGIN_SRC haskell
+addFive x y = (if x > y then y else x) + 5
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+addFive = \x -> \y -> (if x > y then y else x) + 5
+#+END_SRC
+
+**** c)
+Given:
+#+BEGIN_SRC haskell
+mflip f = \x -> \y -> f y x
+#+END_SRC
+
+Rewrite to:
+#+BEGIN_SRC haskell
+mflip f x y = f y x
+#+END_SRC
+* 7.4 Pattern Matching
+
+#+BEGIN_SRC haskell
+  data WherePenguinsLive =
+      Galapagos
+    | Antarctica
+    | Australia
+    | SouthAfrica
+    | SouthAmerica
+    deriving (Eq, Show)
+
+  data Penguin =
+    Peng WherePenguinsLive
+    deriving (Eq, Show)
+
+  isSouthAfrica' :: WherePenguinsLive -> Bool
+  isSouthAfrica' SouthAfrica = True
+  isSouthAfrica' _           = False
+
+  gimmeWhereTheyLive :: Penguin -> WherePenguinsLive
+  gimmeWhereTheyLive (Peng whereitlives) =
+    whereitlives
+
+
+#+END_SRC
