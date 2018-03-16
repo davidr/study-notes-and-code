@@ -241,3 +241,95 @@ oneIsTwo 2 = 22
 *** ...
 
 * 7.7 Guards
+
+** Ex: Guard Duty
+
+*** 1.
+If we take the given avgGrade:
+
+#+BEGIN_SRC haskell
+  avgGrade :: (Fractional a, Ord a) => a -> Char
+  avgGrade x
+    | y >= 0.9  = 'A'
+    | y >= 0.8  = 'B'
+    | y >= 0.7  = 'C'
+    | y >= 0.59 = 'D'
+    | y <  0.59 = 'F'
+    where y = x / 100
+#+END_SRC
+
+and stick an 'otherwise' at the top, everything will be an A. We can rewrite it like this, though:
+
+#+BEGIN_SRC haskell
+  avgGrade :: (Fractional a, Ord a) => a -> Char
+  avgGrade x
+    | y >= 0.9  = 'A'
+    | y >= 0.8  = 'B'
+    | y >= 0.7  = 'C'
+    | y >= 0.59 = 'D'
+    | otherwise = 'F'
+    where y = x / 100
+#+END_SRC
+
+*** 2.
+If we reorder it, as we expect, whatever matches first is returned
+
+*** 3.
+Given:
+#+BEGIN_SRC haskell
+pal xs
+    | xs == reverse xs = True
+    | otherwise        = False
+#+END_SRC
+
+b) pal returns true when xs is a palindrome
+
+*** 4/5.
+#+BEGIN_SRC haskell
+pal :: Eq a => [a] -> Bool
+#+END_SRC
+
+*** 6/7/8.
+Given:
+#+BEGIN_SRC haskell
+  numbers :: (Num a, Ord a) => a -> Integer
+  numbers x
+      | x < 0   = -1
+      | x == 0  = 0
+      | x > 0   = 1
+#+END_SRC
+
+* 7.8 Function Composition
+* 7.9 Pointfree
+
+#+BEGIN_SRC haskell
+-- arith2.hs
+module Arith2 where
+
+add :: Int -> Int -> Int
+add x y = x + y
+
+addPF :: Int -> Int -> Int
+addPF = (+)
+
+addOne :: Int -> Int
+addOne = \x -> x + 1
+
+addOnePF :: Int -> Int
+addOnePF = (+1)
+
+main :: IO ()
+main = do
+  print (0 :: Int)
+  print (add 1 0)
+  print (addOne 0)
+  print (addOnePF 0)
+  print ((addOne . addOne) 0)
+  print ((addOnePF . addOne) 0)
+  print ((addOne . addOnePF) 0)
+  print ((addOnePF . addOnePF) 0)
+  print (negate (addOne 0))
+  print ((negate . addOne) 0)
+  print ((addOne . addOne . addOne
+    . negate . addOne) 0)
+#+END_SRC

@@ -1,0 +1,5 @@
+  numbers :: (Num a, Ord a) => a -> Integer
+  numbers x
+      | x < 0   = -1
+      | x == 0  = 0
+      | x > 0   = 1
