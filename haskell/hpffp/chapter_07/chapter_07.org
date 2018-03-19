@@ -333,3 +333,149 @@ main = do
   print ((addOne . addOne . addOne
     . negate . addOne) 0)
 #+END_SRC
+* 7.10 Demonstrating Composition
+* Chapter Exercises
+** Multiple Choice
+*** 1.
+a polymorphic function d) may resolve to values of different types, depending on inputs
+*** 2.
+Two functions names ~f~ and ~g~ have types ~Char -> String~ and ~String -> [String]~ respectively. The
+composed function ~g . f~ has type b) ~Char -> [String]~
+*** 3.
+A function ~f~ has type ~Ord a = a -> a -> Bool~ and we apply it to one numeric value. The type is now
+d) ~(Ord a, Num a) => a -> Bool~
+*** 4.
+A function with the type ~(a -> b) -> c~  b) is an HOF
+*** 5.
+Given the following definition of f:
+
+#+BEGIN_SRC haskell
+f :: a -> a
+f x = x
+#+END_SRC
+
+the type of ~f True~ is ~f True :: Bool~
+
+** Let's write code
+
+*** 1.
+Given:
+
+#+BEGIN_SRC haskell
+  tensDigit :: Integral a => a -> a
+  tensDigit x = d
+    where xLast = x `div` 10
+          d     = xLast `mod` 10
+#+END_SRC
+
+**** a)
+rewritten with ~divMod~, we get:
+
+#+BEGIN_SRC haskell
+tensDigit' :: Integral a => a -> a
+tensDigit' x = d
+  where (y, _) = divMod x 10
+        (_, d) = divMod y 10
+#+END_SRC
+
+**** b)
+which is the same type as what was given
+
+**** c)
+
+#+BEGIN_SRC haskell
+  hunsDigit :: Integral a => a -> a
+  hunsDigit x = d
+    where (y, _) = divMod x 100
+          (_, d) = divMod y 10
+#+END_SRC
+
+*** 2.
+
+Implement ~foldBool~ to be a sort of "if Bool then a else a'" sort of thing
+
+Using case:
+
+#+BEGIN_SRC haskell
+  foldBool :: a -> a -> Bool -> a
+  foldBool x y b = case b of
+    True -> x
+    _    -> y
+#+END_SRC
+
+Using guard:
+
+#+BEGIN_SRC haskell
+  foldBool' :: a -> a -> Bool -> a
+  foldBool' x y b
+    | b == True   = x
+    | otherwise   = y
+#+END_SRC
+
+*** 3.
+
+#+BEGIN_SRC haskell
+  g :: (a -> b) -> (a, c) -> (b, c)
+  g f (x, y) = (f x, y)
+#+END_SRC
+
+*** 4.
+
+#+BEGIN_SRC haskell
+  module Arith4 where
+
+  -- id :: a -> a
+  -- id x = x
+
+  roundTrip :: (Show a, Read a) => a -> a
+  roundTrip a = read (show a)
+
+  main = do
+    print (roundTrip 4)
+    print (id 4)
+#+END_SRC
+
+*** 5.
+
+#+BEGIN_SRC haskell
+  module Arith4 where
+
+  -- id :: a -> a
+  -- id x = x
+
+  roundTrip :: (Show a, Read a) => a -> a
+  roundTrip a = read (show a)
+
+  roundTripPf :: (Show a, Read a) => a -> a
+  roundTripPf = read . show
+
+  main = do
+    print (roundTrip 4)
+    print (roundTripPf 4)
+    print (id 4)
+#+END_SRC
+
+*** 6.
+
+#+BEGIN_SRC haskell
+  module Arith4 where
+
+  -- id :: a -> a
+  -- id x = x
+
+  roundTrip :: (Show a, Read a) => a -> a
+  roundTrip a = read (show a)
+
+  roundTripPf :: (Show a, Read a) => a -> a
+  roundTripPf = read . show
+
+  roundTripTwoType :: (Show a, Read b) => a -> b
+  roundTripTwoType = read . show
+
+  main = do
+    print (roundTrip 4)
+    print (roundTripPf 4)
+    print (roundTripTwoType 4 :: Integer)
+    print (id 4)
+
+#+END_SRC
