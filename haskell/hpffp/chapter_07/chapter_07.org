@@ -24,7 +24,7 @@ addOneIfOdd n = case odd n of
 #+END_SRC
 
 Rewrite to:
-#+BEGIN_SRC haskell
+#+BEGIN_SRC haskell :tangle 7.3-grab-bag-a.hs
 addOneIfOdd n = case odd n of
   True -> f n
   False -> n
@@ -57,7 +57,7 @@ mflip f x y = f y x
 ** Notes
 Pattern matching in data constructors:
 
-#+BEGIN_SRC haskell
+#+BEGIN_SRC haskell :tangle 7.4-penguin.hs
   data WherePenguinsLive =
       Galapagos
     | Antarctica
