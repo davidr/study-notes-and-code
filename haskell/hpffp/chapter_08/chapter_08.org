@@ -1,0 +1,160 @@
+* 8.1 Recursion
+* 8.2 Factorial
+
+Note the base case ~n = 0~ for this working factorial funciton
+
+#+BEGIN_SRC haskell :tangle factorial.hs
+  module Factorial where
+
+  factorial :: Integer -> Integer
+  factorial 0 = 1
+  factorial n = n * factorial (n - 1)
+#+END_SRC
+
+Another way to look at it is as self-referential function composition, ~f . f . f, ..., f~
+for a function ~f~
+
+** Exercise:
+
+#+BEGIN_SRC haskell
+applyTimes 5 (+1) 5
+-- (+1) (applyTimes 4 (+1) 5)
+-- (+1) ((+1) applyTimes 3 (+1) 5)
+-- (+1) (((+1) applyTimes 2 (+1) 5 ))
+...
+#+END_SRC
+
+* 8.3 Bottom
+
+note: they say that `let x = x in x` should give an exception, but it doesn't in my 8.2.2 version, although it
+doesn't consume any resources either
+
+If we take a partial function like:
+
+#+BEGIN_SRC haskell
+f :: Bool -> Int
+f False = 0
+#+END_SRC
+
+It will throw an exception (or "bottom"?) when run with ~f True~, but we can turn it into a total
+function with ~Maybe~ and ~Just~:
+
+#+BEGIN_SRC haskell
+f :: Bool -> Maybe Int
+f False = Just 0
+f _     = Nothing
+#+END_SRC
+
+which are provided without explanation, though is promised later
+
+* Fibonacci
+
+Everyone's favorite interview question!
+
+#+BEGIN_EXAMPLE
+fib 1 = 1
+fib 2 = 1
+fib n = fib n-2 + fib n-1
+#+END_EXAMPLE
+
+
+** Type
+
+#+BEGIN_SRC haskell
+fibonacci :: Integer -> Integer
+-- or
+fibonacci :: Integral a => a -> a
+#+END_SRC
+
+** Base case
+
+#+BEGIN_SRC haskell
+fibonacci  :: Integral a => a -> a
+fibonacci 0 = 0
+fibonacci 1 = 1
+#+END_SRC
+
+** Arguments
+
+#+BEGIN_SRC haskell
+fibonacci  :: Integral a => a -> a
+fibonacci 0 = 0
+fibonacci 1 = 1
+fibonacci x = (x - 1) (x - 2)
+-- note: doesn't work yet
+#+END_SRC
+
+** Consider the recursion
+
+#+BEGIN_SRC haskell :tangle fibonacci.hs
+fibonacci  :: Integral a => a -> a
+fibonacci 0 = 0
+fibonacci 1 = 1
+fibonacci n = fibonacci (n - 2) + fibonacci (n - 1)
+#+END_SRC
+
+* 8.5 Integer division from scratch
+
+We'll make an integer division from subtraction operations
+
+** Types
+
+#+BEGIN_SRC haskell
+dividedBy :: Integral a => a -> a -> a
+dividedBy = div
+#+END_SRC
+
+or
+
+#+BEGIN_SRC haskell
+type Numerator   = Integer
+type Denominator = Integer
+type Quotient    = Integer
+
+dividedBy :: Numerator -> Denominator -> Quotient
+dividedBy  = div
+#+END_SRC
+
+(We expect this to change as we examine base case, etc.)
+
+** Base case
+
+For even division, we'll know when to stop because subtracting denominator from numerator quotient times
+will yield 0
+
+For division with remainder, subtracting denominator from numerator quotient times will yield sum number
+smaller than denominator, so returning a 2-tuple is what we want if we don't want to implement floor
+division
+
+#+BEGIN_SRC haskell :tangle dividedby.hs
+  dividedBy :: Integral a => a -> a -> (a, a)
+  dividedBy num denom = go num denom 0
+    where go n   d count
+           | n < d     = (count, n)
+           | otherwise = go (n - d) d (count + 1)
+#+END_SRC
+
+note: we've started using a ~go/where~ function.
+
+* 8.6 Chapter Exercises
+
+** 1.
+The type of ~[[True, False], [True, True], [False, True]]~ is d) ~[[Bool]]~
+
+** 2.
+The type of the above is the same as the type of b) ~[[3 == 3], [6 > 5], [3 < 4]]~
+
+** 3.
+Given:
+
+#+BEGIN_SRC haskell
+func    :: [a] -> [a] -> [a]
+func x y = x ++ y
+#+END_SRC
+
+d) all of the above are true (x, y must be same type; x, y must be lists; if x is ~String~, y must be ~String~
+
+** 4.
+only b) ~func "Hello" "World" is valid
+
+** Reviewing currying
