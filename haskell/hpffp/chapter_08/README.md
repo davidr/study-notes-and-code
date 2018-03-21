@@ -1,36 +1,38 @@
-- [8.1 Recursion](#org2bf9771)
-- [8.2 Factorial](#orgdfb273b)
-  - [Exercise:](#org650483a)
-- [8.3 Bottom](#org927dbdf)
-- [Fibonacci](#org0e2e8ce)
-  - [Type](#orga3aad5d)
-  - [Base case](#orgd174d18)
-  - [Arguments](#orgebe0181)
-  - [Consider the recursion](#orgfcef1b4)
-- [8.5 Integer division from scratch](#orgc1d0498)
-  - [Types](#org783d61d)
-  - [Base case](#org6d28198)
-- [8.6 Chapter Exercises](#org596b0a1)
-  - [1.](#org70b357b)
-  - [2.](#org9a15468)
-  - [3.](#org2c45c58)
-  - [4.](#org1b5607d)
-  - [Reviewing currying](#orgc2b5e57)
-    - [1.](#orgb41576a)
-    - [2.](#org5da6823)
-    - [3.](#org15a0c4d)
-  - [Recursion](#org27b34b9)
-    - [2.](#org69a4d23)
-    - [3.](#orgb16aeb1)
-  - [Fixing dividedBy](#org68d066d)
+- [8.1 Recursion](#org839c52a)
+- [8.2 Factorial](#orgf1e41fe)
+  - [Exercise:](#org8e90df3)
+- [8.3 Bottom](#orga390bb6)
+- [Fibonacci](#org6311e62)
+  - [Type](#orgc903775)
+  - [Base case](#org42fb846)
+  - [Arguments](#orge9f27c8)
+  - [Consider the recursion](#orgf40ba06)
+- [8.5 Integer division from scratch](#orge58d978)
+  - [Types](#org0da6392)
+  - [Base case](#orgc967196)
+- [8.6 Chapter Exercises](#org066ce58)
+  - [1.](#org9123297)
+  - [2.](#org3c14495)
+  - [3.](#org6354053)
+  - [4.](#orgf8919b3)
+  - [Reviewing currying](#orgefa7091)
+    - [1.](#org889186e)
+    - [2.](#org48f80e0)
+    - [3.](#orgfdfded0)
+  - [Recursion](#org910dab3)
+    - [2.](#org93c69f4)
+    - [3.](#orgb53b042)
+  - [Fixing dividedBy](#orgfbd80ae)
+  - [McCarthy 91 function](#orgacf6608)
+  - [Numbers into words](#orgce66c64)
 
 
-<a id="org2bf9771"></a>
+<a id="org839c52a"></a>
 
 # 8.1 Recursion
 
 
-<a id="orgdfb273b"></a>
+<a id="orgf1e41fe"></a>
 
 # 8.2 Factorial
 
@@ -47,7 +49,7 @@ factorial n = n * factorial (n - 1)
 Another way to look at it is as self-referential function composition, `f . f . f, ..., f` for a function `f`
 
 
-<a id="org650483a"></a>
+<a id="org8e90df3"></a>
 
 ## Exercise:
 
@@ -60,7 +62,7 @@ applyTimes 5 (+1) 5
 ```
 
 
-<a id="org927dbdf"></a>
+<a id="orga390bb6"></a>
 
 # 8.3 Bottom
 
@@ -84,7 +86,7 @@ f _     = Nothing
 which are provided without explanation, though is promised later
 
 
-<a id="org0e2e8ce"></a>
+<a id="org6311e62"></a>
 
 # Fibonacci
 
@@ -95,7 +97,7 @@ Everyone's favorite interview question!
     fib n = fib n-2 + fib n-1
 
 
-<a id="orga3aad5d"></a>
+<a id="orgc903775"></a>
 
 ## Type
 
@@ -106,7 +108,7 @@ fibonacci :: Integral a => a -> a
 ```
 
 
-<a id="orgd174d18"></a>
+<a id="org42fb846"></a>
 
 ## Base case
 
@@ -117,7 +119,7 @@ fibonacci 1 = 1
 ```
 
 
-<a id="orgebe0181"></a>
+<a id="orge9f27c8"></a>
 
 ## Arguments
 
@@ -130,7 +132,7 @@ fibonacci x = (x - 1) (x - 2)
 ```
 
 
-<a id="orgfcef1b4"></a>
+<a id="orgf40ba06"></a>
 
 ## Consider the recursion
 
@@ -142,14 +144,14 @@ fibonacci n = fibonacci (n - 2) + fibonacci (n - 1)
 ```
 
 
-<a id="orgc1d0498"></a>
+<a id="orge58d978"></a>
 
 # 8.5 Integer division from scratch
 
 We'll make an integer division from subtraction operations
 
 
-<a id="org783d61d"></a>
+<a id="org0da6392"></a>
 
 ## Types
 
@@ -172,7 +174,7 @@ dividedBy  = div
 (We expect this to change as we examine base case, etc.)
 
 
-<a id="org6d28198"></a>
+<a id="orgc967196"></a>
 
 ## Base case
 
@@ -191,26 +193,26 @@ dividedBy num denom = go num denom 0
 note: we've started using a `go/where` function.
 
 
-<a id="org596b0a1"></a>
+<a id="org066ce58"></a>
 
 # 8.6 Chapter Exercises
 
 
-<a id="org70b357b"></a>
+<a id="org9123297"></a>
 
 ## 1.
 
 The type of `[[True, False], [True, True], [False, True]]` is d) `[[Bool]]`
 
 
-<a id="org9a15468"></a>
+<a id="org3c14495"></a>
 
 ## 2.
 
 The type of the above is the same as the type of b) `[[3 == 3], [6 > 5], [3 < 4]]`
 
 
-<a id="org2c45c58"></a>
+<a id="org6354053"></a>
 
 ## 3.
 
@@ -224,14 +226,14 @@ func x y = x ++ y
 d) all of the above are true (x, y must be same type; x, y must be lists; if x is `String`, y must be `String`
 
 
-<a id="org1b5607d"></a>
+<a id="orgf8919b3"></a>
 
 ## 4.
 
 only b) ~func "Hello" "World" is valid
 
 
-<a id="orgc2b5e57"></a>
+<a id="orgefa7091"></a>
 
 ## Reviewing currying
 
@@ -252,33 +254,33 @@ frappe = flippy "haha"
 ```
 
 
-<a id="orgb41576a"></a>
+<a id="org889186e"></a>
 
 ### 1.
 
 "woops mrow woohoo!"
 
 
-<a id="org5da6823"></a>
+<a id="org48f80e0"></a>
 
 ### 2.
 
 "1 mrow haha"
 
 
-<a id="org15a0c4d"></a>
+<a id="orgfdfded0"></a>
 
 ### 3.
 
 "woops mrow 2 mrow haha" &#x2026;
 
 
-<a id="org27b34b9"></a>
+<a id="org910dab3"></a>
 
 ## Recursion
 
 
-<a id="org69a4d23"></a>
+<a id="org93c69f4"></a>
 
 ### 2.
 
@@ -292,7 +294,7 @@ recurseSum n
 ```
 
 
-<a id="orgb16aeb1"></a>
+<a id="orgb53b042"></a>
 
 ### 3.
 
@@ -307,16 +309,76 @@ multTheHardWay x y = go x y 0
 ```
 
 
-<a id="org68d066d"></a>
+<a id="orgfbd80ae"></a>
 
 ## Fixing dividedBy
 
 to handle divisors <= 0, we need to make some changes
 
 ```haskell
-dividedBy :: Integral a => a -> a -> (a, a)
-dividedBy num denom = go num denom 0
-  where go n   d count
-	 | n < d     = (count, n)
-	 | otherwise = go (n - d) d (count + 1)
+data DividedResult = Result (Integer, Integer) | DividedByZero deriving Show
+
+dividedBy :: Integer -> Integer -> DividedResult
+dividedBy num denom = go num denom 0 1
+  where go n d count sign
+	 | d == 0          = DividedByZero
+	 | n < 0 && d < 0  = go (abs n) (abs d) 0   1
+	 | n < 0 || d < 0  = go (abs n) (abs d) 0 (-1)
+	 | n < d           = Result (sign * count, sign * n)
+	 | otherwise       = go (n - d) d (count + 1) sign
 ```
+
+
+<a id="orgacf6608"></a>
+
+## McCarthy 91 function
+
+```haskell
+mc91 :: Integral a => a -> a
+mc91 n
+  | n >  100  = n - 10
+  | otherwise = mc91 . mc91 $ n + 11
+```
+
+
+<a id="orgce66c64"></a>
+
+## Numbers into words
+
+```haskell
+module WordNumber where
+
+import Data.List (intersperse)
+
+digitToWord :: Int -> String
+digitToWord n
+  | n == 0    = "oh"
+  | n == 1    = "one"
+  | n == 2    = "two"
+  | n == 3    = "three"
+  | n == 4    = "four"
+  | n == 5    = "five"
+  | n == 6    = "six"
+  | n == 7    = "seven"
+  | n == 8    = "eight"
+  | n == 9    = "nine"
+  | otherwise = "UNDEFINED"
+
+digits :: Int -> [Int]
+digits n = go n []
+  where go n ns
+	 | n < 10    = n :[] ++ ns
+	 | otherwise = go (div n 10) ((mod n 10) :[] ++ ns)
+
+wordNumber :: Int -> String
+wordNumber n =
+  concat $ intersperse "-" (map digitToWord (digits n))
+
+```
+
+Keeping track of the stuff in that dense wordnumber line:
+
+    ns                                             - [1, 2, 3]
+    wordlist = map digitToWord ns                  - ["one", "two", "three"]
+    wordswithhyphen = intersperse "-" wordlist     - ["one", "-", "two", "-", "three"]
+    concat wordswithhyphen                         - "one-two-three"

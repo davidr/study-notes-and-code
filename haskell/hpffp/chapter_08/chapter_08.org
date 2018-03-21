@@ -215,9 +215,65 @@ multTheHardWay x y = go x y 0
 to handle divisors <= 0, we need to make some changes
 
 #+BEGIN_SRC haskell :tangle 8.6-dividedby-fixed.hs
-  dividedBy :: Integral a => a -> a -> (a, a)
-  dividedBy num denom = go num denom 0
-    where go n   d count
-           | n < d     = (count, n)
-           | otherwise = go (n - d) d (count + 1)
+  data DividedResult = Result (Integer, Integer) | DividedByZero deriving Show
+
+  dividedBy :: Integer -> Integer -> DividedResult
+  dividedBy num denom = go num denom 0 1
+    where go n d count sign
+           | d == 0          = DividedByZero
+           | n < 0 && d < 0  = go (abs n) (abs d) 0   1
+           | n < 0 || d < 0  = go (abs n) (abs d) 0 (-1)
+           | n < d           = Result (sign * count, sign * n)
+           | otherwise       = go (n - d) d (count + 1) sign
 #+END_SRC
+
+** McCarthy 91 function
+
+#+BEGIN_SRC haskell :tangle 8.6-mccarthy-91.hs
+mc91 :: Integral a => a -> a
+mc91 n
+  | n >  100  = n - 10
+  | otherwise = mc91 . mc91 $ n + 11
+#+END_SRC
+
+** Numbers into words
+
+#+BEGIN_SRC haskell :tangle 8.6-numbers-into-words.hs
+  module WordNumber where
+
+  import Data.List (intersperse)
+
+  digitToWord :: Int -> String
+  digitToWord n
+    | n == 0    = "oh"
+    | n == 1    = "one"
+    | n == 2    = "two"
+    | n == 3    = "three"
+    | n == 4    = "four"
+    | n == 5    = "five"
+    | n == 6    = "six"
+    | n == 7    = "seven"
+    | n == 8    = "eight"
+    | n == 9    = "nine"
+    | otherwise = "UNDEFINED"
+
+  digits :: Int -> [Int]
+  digits n = go n []
+    where go n ns
+           | n < 10    = n :[] ++ ns
+           | otherwise = go (div n 10) ((mod n 10) :[] ++ ns)
+
+  wordNumber :: Int -> String
+  wordNumber n =
+    concat $ intersperse "-" (map digitToWord (digits n))
+
+#+END_SRC
+
+Keeping track of the stuff in that dense wordnumber line:
+
+#+BEGIN_EXAMPLE
+ns                                             - [1, 2, 3]
+wordlist = map digitToWord ns                  - ["one", "two", "three"]
+wordswithhyphen = intersperse "-" wordlist     - ["one", "-", "two", "-", "three"]
+concat wordswithhyphen                         - "one-two-three"
+#+END_EXAMPLE
