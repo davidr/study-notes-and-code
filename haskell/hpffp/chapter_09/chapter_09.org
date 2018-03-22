@@ -1,0 +1,68 @@
+* 9.1 Lists
+* 9.2 The list datatype
+
+The list datatype is defined like: ~data [] a = [] | a : [a]~. Sum datatypes haven't been introduced
+yet.
+
+* 9.3 Pattern matching on lists
+
+Naive pattern matching on lists doesn't take into account an empty list, so Maybe is needed:
+
+#+BEGIN_SRC haskell :tangle safetail.hs
+  safeTail         :: [a] -> Maybe [a]
+  safeTail []      = Nothing
+  safeTail (x:[])  = Nothing
+  safeTail (_:xs)  = Just xs
+#+END_SRC
+
+* 9.4 List's syntactic sugar
+
+Note that
+#+BEGIN_SRC haskell
+[1, 2, 3] ++ [4]
+#+END_SRC
+
+is identical to
+
+#+BEGIN_SRC haskell
+(1 : 2 : 3 : []) ++ 4 : []
+#+END_SRC
+
+When talking of lists, some terms:
+
+** "cons cells"
+cons cells are the list datatype's second constructor, ~a : [a]~, the result of recursively prepending
+a value to "more list". The cons cell is a conceptual space that values may inhabit.
+
+** spine
+spine is the connective structure that holds the cons cells together and in place
+
+* 9.5 Using ranges to construct lists
+
+#+BEGIN_SRC haskell
+[1,3..10]
+
+-- is the same as
+
+enumFromThenTo 1 3 10
+#+END_SRC
+
+for all instances of the Enum typeclass
+
+** Exercise: EnumFromTo
+
+#+BEGIN_SRC haskell :tangle 9.5-enumFromTo.hs
+  eftBool :: Bool -> Bool -> [Bool]
+  eftBool = undefined
+
+  eftOrd :: Ordering
+         -> Ordering
+         -> [Ordering]
+  eftOrd = undefined
+
+  eftInt :: Int -> Int -> [Int]
+  eftInt = undefined
+
+  eftChar :: Char -> Char -> [Char]
+  eftChar = undefined
+#+END_SRC
