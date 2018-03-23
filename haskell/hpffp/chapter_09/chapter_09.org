@@ -51,18 +51,169 @@ for all instances of the Enum typeclass
 
 ** Exercise: EnumFromTo
 
-#+BEGIN_SRC haskell :tangle 9.5-enumFromTo.hs
-  eftBool :: Bool -> Bool -> [Bool]
-  eftBool = undefined
+I think I probably misunderstood what this question was asking for. They wanted functions for
+all four types, Bool, Ordering, Int, Char, but they're all instances of the Enum and Eq
+typeclasses, so the eftEnumEq function seems to do what I think they're asking for, but then I
+don't understand why they asked for all four. I assume I misunderstood.
 
-  eftOrd :: Ordering
-         -> Ordering
-         -> [Ordering]
-  eftOrd = undefined
+#+BEGIN_SRC haskell :tangle 9.5-enumFromTo.hs
+  eftEnumEq :: (Enum a, Eq a) => a -> a -> [a]
+  eftEnumEq start stop = go start stop []
+    where go curr stop retlist
+           | curr == stop  = retlist ++ [curr]
+           | otherwise     = go (succ curr) stop (retlist ++ [curr])
+
+  eftBool :: Bool -> Bool -> [Bool]
+  eftBool  = eftEnumEq
+
+  eftOrd :: Ordering -> Ordering -> [Ordering]
+  eftOrd  = eftEnumEq
 
   eftInt :: Int -> Int -> [Int]
-  eftInt = undefined
+  eftInt =  eftEnumEq
 
   eftChar :: Char -> Char -> [Char]
-  eftChar = undefined
+  eftChar  = eftEnumEq
+#+END_SRC
+
+* 9.6 Extracting portions of lists
+
+~take n a~ returns the first n elements of List a as a list
+
+~drop n a~ returns the last (length a) - n elements of List a as a list (i.e. drops the first n elements and
+returns the remaining ones)
+
+~splitat n a~ returns two-tuple of lists from list a, split at the nth position
+
+takeWhile and dropWhile do similar things, but as higher-order functions with ~a -> Bool~ "selection" functions
+as arguments:
+
+#+BEGIN_EXAMPLE
+Prelude> takeWhile (=='a') [a..z]
+"a"
+#+END_EXAMPLE
+
+** Exercises: Thy Fearful Symmetry
+
+*** 1.
+
+My solution seems needlessly complicated. There's probably a solution that involves not having
+to use both dropWhile and takeWhile in the same go statement
+
+#+BEGIN_SRC haskell :tangle 9.6.symmetry01.hs
+  myWords :: [Char] -> [[Char]]
+  myWords sentence = go sentence []
+    where go sentence retwords
+           | length sentence > 0 = go (drop 1 $ dropWhile (/=' ') sentence)
+                                      (retwords ++ [takeWhile (/=' ') sentence])
+           | otherwise           = retwords
+#+END_SRC
+
+*** 2.
+
+#+BEGIN_SRC haskell :tangle 9.6.symmetry02.hs
+  module PoemLines where
+
+  firstSen = "Tyger Tyger, burning bright\n"
+  secondSen = "In the forests of the night\n"
+  thirdSen = "What immortal hand or eye\n"
+  fourthSen = "Could frame thy fearful\
+              \ symmetry?"
+  sentences = firstSen ++ secondSen
+           ++ thirdSen ++ fourthSen
+
+  -- putStrLn sentences -- should print
+  -- Tyger Tyger, burning bright
+  -- In the forests of the night
+  -- What immortal hand or eye
+  -- Could frame thy fearful symmetry?
+
+
+  -- Implement this
+  myLines :: String -> [String]
+  myLines longstring = go longstring []
+    where go longstring lines
+           | length longstring > 0 = go (drop 1 $ dropWhile (/='\n') longstring)
+                                        (lines ++ [takeWhile (/='\n') longstring])
+           | otherwise             = lines
+
+  -- What we want 'myLines sentences' to equal
+  shouldEqual =
+    [ "Tyger Tyger, burning bright"
+    , "In the forests of the night"
+    , "What immortal hand or eye"
+    , "Could frame thy fearful symmetry?"
+    ]
+
+  -- The main function here is a small test to ensure you've written your function
+  -- correctly.
+  main :: IO ()
+  main =
+    print $
+    "Are they equal? "
+    ++ show (myLines sentences
+             == shouldEqual)
+#+END_SRC
+
+*** 3. Left as an exercise to the reader's reader.
+
+* 9.7 List comprehensions
+
+#+BEGIN_EXAMPLE
+[ x^2 | x <- [1..10]]
+#+END_EXAMPLE
+
+ or with predicates:
+
+#+BEGIN_EXAMPLE
+[x^2 | x <- [1..10], rem x 2 == 0]
+#+END_EXAMPLE
+
+multiple generators:
+
+#+BEGIN_EXAMPLE
+[x^y | x <- [1..5], y <- [2,3]]
+#+END_EXAMPLE
+
+multiple predicates!:
+
+#+BEGIN_EXAMPLE
+[x^y |
+ x <- [1..5],
+ y <- [2, 3],
+ x^y < 200]
+#+END_EXAMPLE
+
+it can zip up multiple generators of different lengths and types into tuples:
+
+#+BEGIN_EXAMPLE
+Prelude> :{
+Prelude| [(x, y) |
+Prelude| x <- [1, 2, 3],
+Prelude| y <- [6, 7]]
+Prelude| :}
+[(1,6),(1,7),(2,6),(2,7),(3,6),(3,7)]
+#+END_EXAMPLE
+
+** Exercises: Comprehend Thy Lists
+
+#+BEGIN_EXAMPLE
+-- let mySqr = [x^2 | x <- [1..10]]    == [1,4,9,16,25,36,49,64,81,100]
+
+[x | x <- mySqr, rem x 2 == 0] == [4,16,36,64,100]
+[(x, y) | x <- mySqr, y <- mySqr, x < 50, y > 50]
+...
+#+END_EXAMPLE
+
+** TODO Exercises: Square Cube
+
+#+BEGIN_SRC haskell :tangle 9.7-square-cube.hs
+mySqr  = [x^2 | x <- [1..5]]
+myCube = [x^3 | x <- [1..5]]
+
+myTuples = [(x, y) | x <- mySqr, y <- myCube]
+
+myTuplesLtFifty = [(x, y) | x <- mySqr, y <- myCube, x < 50 && y < 50]
+
+
 #+END_SRC

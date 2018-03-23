@@ -1,13 +1,17 @@
-eftBool :: Bool -> Bool -> [Bool]
-eftBool = undefined
+eftEnumEq :: (Enum a, Eq a) => a -> a -> [a]
+eftEnumEq start stop = go start stop []
+  where go curr stop retlist
+         | curr == stop  = retlist ++ [curr]
+         | otherwise     = go (succ curr) stop (retlist ++ [curr])
 
-eftOrd :: Ordering
-       -> Ordering
-       -> [Ordering]
-eftOrd = undefined
+eftBool :: Bool -> Bool -> [Bool]
+eftBool  = eftEnumEq
+
+eftOrd :: Ordering -> Ordering -> [Ordering]
+eftOrd  = eftEnumEq
 
 eftInt :: Int -> Int -> [Int]
-eftInt = undefined
+eftInt =  eftEnumEq
 
 eftChar :: Char -> Char -> [Char]
-eftChar = undefined
+eftChar  = eftEnumEq
