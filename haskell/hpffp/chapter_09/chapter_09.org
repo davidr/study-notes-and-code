@@ -498,3 +498,146 @@ myZip xs ys = myZipWith (,) xs ys
 
 myZip someNums someLetts
 #+END_SRC
+
+* 9.12 Chapter Exercises
+
+** Data.Char
+
+*** 1
+
+#+BEGIN_SRC haskell
+import Data.Char
+:t isUpper
+#+END_SRC
+
+#+RESULTS[725d00c83ac149d082c9e9e90f7eeec48626a9cd]:
+: isUpper :: Char -> Bool
+
+#+BEGIN_SRC haskell
+import Data.Char
+:t toUpper
+#+END_SRC
+
+#+RESULTS[efa34236e854eabf9fe155f60ec91b328f4422f4]:
+: toUpper :: Char -> Char
+
+*** 2
+
+use isUpper for a filter statement
+
+*** 3
+
+#+BEGIN_SRC haskell
+import Data.Char
+
+capString :: String -> String
+capString (x:xs) = toUpper x : xs
+
+capString "julie"
+#+END_SRC
+
+#+RESULTS[f3aeaf3ec8c87458ba4082d76705762b79cd4c66]:
+: Prelude Data.Char> "Julie"
+
+*** 4
+
+make a recursive case of (3) above to change all letters to caps
+
+#+BEGIN_SRC haskell
+  import Data.Char
+
+  capAllString :: String -> String
+  capAllString []     = []
+  capAllString (x:xs) = toUpper x : capAllString xs
+
+  capAllString "woot"
+#+END_SRC
+
+#+RESULTS[ead3229e241791794d9318cd7d172e6bb9f73627]:
+: Prelude Data.Char> "WOOT"
+
+*** 5
+
+#+BEGIN_SRC haskell
+:t head
+#+END_SRC
+
+#+RESULTS[11b13bce0bbdd8198549473af1d75ca2462d2e74]:
+: head :: [a] -> a
+
+Simple function:
+
+#+BEGIN_SRC haskell
+import Data.Char
+
+capHead :: String -> Char
+capHead s = toUpper (head s)
+
+capHead "julie"
+#+END_SRC
+
+#+RESULTS[f822c319f3f09032b7415aaacf205d7adaf30699]:
+: Prelude Data.Char> 'J'
+
+*** 6
+
+With function composition:
+
+#+BEGIN_SRC haskell
+import Data.Char
+
+capHead :: String -> Char
+capHead s = toUpper . head $ s
+
+capHead "julie"
+#+END_SRC
+
+#+RESULTS[d1e16dd094c8b2456c7df68cb9785309452f03d4]:
+: Prelude Data.Char> 'J'
+
+As pointfree:
+
+#+BEGIN_SRC haskell
+import Data.Char
+
+capHead = toUpper . head
+
+capHead "julie"
+#+END_SRC
+
+#+RESULTS[51c3f022b6f2eb038819dc81105c83ec9d17e06c]:
+: Prelude Data.Char> 'J'
+
+** Ciphers
+
+Todo: this should handle caps
+
+#+BEGIN_SRC haskell :tangle cipher.hs
+  module Cipher where
+
+  import Data.Char
+
+  data CharDirection = Up | Down
+
+  -- alphaBase should really be determined upper and lower case
+  alphaBase = ord 'a'
+
+  -- base function to shift chars either up or down depending on supplied function f
+  charShift :: CharDirection -> Int -> Char -> Char
+  charShift Up   n c = chr $ alphaBase + (mod ((+) ((ord c) - alphaBase) n) 26)
+  charShift Down n c = chr $ alphaBase + (mod ((-) ((ord c) - alphaBase) n) 26)
+
+  charShiftUp :: Int -> Char -> Char
+  charShiftUp n c = charShift Up n c
+
+  charShiftDown :: Int -> Char -> Char
+  charShiftDown n c = charShift Down n c
+
+  caesar :: Int -> String -> String
+  caesar _ []     = []
+  caesar n (x:xs) = charShiftUp n x : caesar n xs
+
+  unCaesar :: Int -> String -> String
+  unCaesar _ []     = []
+  unCaesar n (x:xs) = charShiftUp n x : unCaesar n xs
+#+END_SRC
