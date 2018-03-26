@@ -8,7 +8,9 @@ alphaBase = ord 'a'
 
 -- base function to shift chars either up or down depending on supplied function f
 charShift :: Int -> Char -> Char
-charShift n c = chr $ alphaBase + (mod (((ord c) - alphaBase) + n) 26)
+charShift n c
+  | isUpper c = chr $ (ord 'A') + (mod (((ord c) - (ord 'A')) + n) 26)
+  | otherwise = chr $ (ord 'a') + (mod (((ord c) - (ord 'a')) + n) 26)
 
 caesar :: Int -> String -> String
 caesar _ []     = []
