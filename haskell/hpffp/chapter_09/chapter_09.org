@@ -1,3 +1,12 @@
+#+TITLE: Haskell Programming from First Principles Chapter 9 notes/answers
+#+NAME: David Ressman
+#+EMAIL: davidr@ressman.org
+#+LANGUAGE: en
+#+STARTUP: indent
+#+OPTIONS: num:nil toc:1
+#+PROPERTY: header-args:haskell :cache yes :results verbatim :exports both
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" />
+
 * 9.1 Lists
 * 9.2 The list datatype
 
@@ -321,20 +330,26 @@ list "aeiou" over xs. (returns [Bool])
 map (^2) [1..10]
 #+END_SRC
 
-Will return a list ~[1^2, 2^2, ..., 10^2]~
+#+RESULTS[85aa06917ddf9d8090f6b1cb5547bbd37093888c]:
+: [1,4,9,16,25,36,49,64,81,100]
+
+
 **** b
 
 #+BEGIN_SRC haskell
 map minimum [[1..10], [10..20], [20..30]]
 #+END_SRC
 
-returns ~[1, 10, 20]~
+#+RESULTS[d5efd2c2622979f6e7b00700761d6368a612e627]:
+: [1,10,20]
+
 **** c
 
 #+BEGIN_SRC haskell
 map sum [[1..5], [1..5], [1..5]]
 #+END_SRC
 
-returns [15, 15, 15]
+#+RESULTS[5212c673827215dd207e76a7d3806b241befc3ff]:
+: [15,15,15]
 
 *** 6

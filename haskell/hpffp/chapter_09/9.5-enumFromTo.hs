@@ -1,3 +1,4 @@
+
 eftEnumEq :: (Enum a, Eq a) => a -> a -> [a]
 eftEnumEq start stop = go start stop []
   where go curr stop retlist

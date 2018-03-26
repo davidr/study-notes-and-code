@@ -1,3 +1,4 @@
+
 module PoemLines where
 
 firstSen = "Tyger Tyger, burning bright\n"
