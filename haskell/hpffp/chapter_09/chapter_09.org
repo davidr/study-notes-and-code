@@ -277,3 +277,64 @@ I think it's whnf, but @larrybotha thinks it's nf and he's smarter than me. TODO
 this
 
 * 9.9 Transforming lists of values
+
+** Exercises: More Bottoms:
+
+*** 1
+
+#+BEGIN_SRC haskell
+take 1 $ map (+1) [undefined, 2, 3]
+#+END_SRC
+
+Will bottom because it will evaluate (+) 1 undefined
+
+*** 2
+
+#+BEGIN_SRC haskell
+take 1 $ map (+1) [1, undefined, 3]
+#+END_SRC
+
+Will return 2
+
+*** 3
+
+#+BEGIN_SRC haskell
+take 2 $ map (+1) [1, undefined, 3]
+#+END_SRC
+
+Will bottom, for the same reason as (1)
+
+*** 4
+
+#+BEGIN_SRC haskell
+itIsMystery xs =
+  map (\x -> elem x "aeiou") xs
+#+END_SRC
+
+Maps a function that does a boolean check for whether an element of the list ~xs~ is in the
+list "aeiou" over xs. (returns [Bool])
+
+*** 5
+**** a
+
+#+BEGIN_SRC haskell
+map (^2) [1..10]
+#+END_SRC
+
+Will return a list ~[1^2, 2^2, ..., 10^2]~
+**** b
+
+#+BEGIN_SRC haskell
+map minimum [[1..10], [10..20], [20..30]]
+#+END_SRC
+
+returns ~[1, 10, 20]~
+**** c
+
+#+BEGIN_SRC haskell
+map sum [[1..5], [1..5], [1..5]]
+#+END_SRC
+
+returns [15, 15, 15]
+
+*** 6
