@@ -634,3 +634,110 @@ Todo: this should handle caps
   unCaesar _ []     = []
   unCaesar n (x:xs) = charShift (negate n) x : unCaesar n xs
 #+END_SRC
+
+** Writing your own standard functions
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+import Data.Bool
+#+END_SRC
+
+
+*** 1. myOr
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myOr :: [Bool] -> Bool
+myOr []     = False
+myOr (x:xs) = x || myOr xs
+#+END_SRC
+
+*** 2. myAny
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny _ [] = False
+myAny f xs = or (map f xs)
+#+END_SRC
+
+*** 3. myElem
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myElem :: Eq a => a -> [a] -> Bool
+myElem _ [] = False
+myElem x (y:ys)
+  | x == y    = True
+  | otherwise = myElem x ys
+#+END_SRC
+
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myElem' :: Eq a => a -> [a] -> Bool
+myElem' _ [] = False
+myElem' x ys = any (== x) ys
+#+END_SRC
+
+*** 4. myReverse
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myReverse :: [a] -> [a]
+myReverse [] = []
+myReverse (x:xs) = myReverse xs ++ [x]
+#+END_SRC
+
+*** 5. squish
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+squish :: [[a]] -> [a]
+squish []     = []
+squish (x:xs) = x ++ squish xs
+#+END_SRC
+
+How the hell does that work? The "x" in (x:xs) reaches "into" the nested lists?
+
+*** 6. squishMap
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap _ [] = []
+squishMap f (x:xs) = f x ++ squishMap f xs
+#+END_SRC
+
+*** 7 squishAgain
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+squishAgain :: [[a]] -> [a]
+squishAgain xs = squishMap id xs
+#+END_SRC
+
+*** 8 myMaximumBy
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy _ []         = error "empty list"
+myMaximumBy _ (x0:[])    = x0
+myMaximumBy f (x0:x1:[]) = bool x0 x1 (f x0 x1 == LT)
+myMaximumBy f (x0:x1:xs)
+  | f x0 x1 == GT = myMaximumBy f (x0:xs)
+  | otherwise     = myMaximumBy f (x1:xs)
+#+END_SRC
+
+*** 9 myMinimumBy
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy _ []         = error "empty list"
+myMinimumBy _ (x0:[])    = x0
+myMinimumBy f (x0:x1:[]) = bool x0 x1 (f x0 x1 == GT)
+myMinimumBy f (x0:x1:xs)
+  | f x0 x1 == LT = myMinimumBy f (x0:xs)
+  | otherwise     = myMinimumBy f (x1:xs)
+#+END_SRC
+
+*** 10 myMaximum/myMinimum
+
+#+BEGIN_SRC haskell :tangle mystdfunctions.hs
+myMaximum :: (Ord a) => [a] -> a
+myMaximum xs = myMaximumBy compare xs
+
+myMinimum :: (Ord a) => [a] -> a
+myMinimum xs = myMinimumBy compare xs
+#+END_SRC
