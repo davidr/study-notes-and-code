@@ -1,0 +1,201 @@
+#+TITLE: Haskell Programming from First Principles Chapter 10 notes/answers
+#+NAME: David Ressman
+#+EMAIL: davidr@ressman.org
+#+LANGUAGE: en
+#+STARTUP: indent
+#+OPTIONS: num:nil toc:1
+#+PROPERTY: header-args:haskell :cache yes :results verbatim :exports both
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" />
+
+* 10.4 Fold right (right-associative fold)
+
+Convenience function to show how ~foldr~ evaluates/associates:
+
+#+BEGIN_SRC haskell
+xs = map show [1..5]
+foldr (\x y -> concat ["(",x,"+",y,")"]) "0" xs
+#+END_SRC
+
+#+RESULTS[8200e9c093ec05b939ec56210d440264cbb1dcc8]:
+: (1+(2+(3+(4+(5+0)))))
+
+* 10.5 Fold left
+
+Similar convenience function to show how ~foldl~ associates:
+
+#+BEGIN_SRC haskell
+f x y = concat ["(", x, "+", y, ")"]
+foldl f "0" (map show [1..5])
+#+END_SRC
+
+#+RESULTS[c8ff082f2609ed683ecedf7dfdfaf671c9b20373]:
+: (((((0+1)+2)+3)+4)+5)
+
+We can also use ~scan~ functions to see the intermediate stages of evaluation:
+
+#+BEGIN_SRC haskell
+scanr (+) 0 [1..5]
+#+END_SRC
+
+#+RESULTS[4bfce1d2463b6ac1c2c9beb8de8a04e14e51629e]:
+: [15,14,12,9,5,0]
+
+#+BEGIN_SRC haskell
+scanl (+) 0 [1..5]
+#+END_SRC
+
+#+RESULTS[3c97a38284fde45cb6e1fc2432e12807f63e9e1b]:
+: [0,1,3,6,10,15]
+
+/Note/: scanl evaluates left to right, scanr right to left
+
+** Exercises: Understanding Folds
+
+*** 1
+#+BEGIN_SRC haskell
+foldr (*) 1 [1..5]
+#+END_SRC
+
+#+RESULTS[102a2d82bf7e46ead2c96dca0b8124994b7c6718]:
+: 120
+
+returns the same as
+
+(b)
+#+BEGIN_SRC haskell
+foldl (flip (*)) 1 [1..5]
+#+END_SRC
+
+#+RESULTS[d81ce78e5b8eca95a1ce8940c257ad78c41269fa]:
+: 120
+
+
+AND
+
+(c)
+#+BEGIN_SRC haskell
+foldl (*) 1 [1..5]
+#+END_SRC
+
+#+RESULTS[725d6143bbb8fcc9318b7f95622238fa037b4b69]:
+: 120
+
+*** 2
+
+#+BEGIN_EXAMPLE
+foldl (flip (*)) 1 [1..3]
+
+-- substitute f for flip (*) to make it easier to read
+foldl f          1 (1 : 2 : 3 : [])
+((1 f 1) f 2) f 3
+((1 * 1) f 2) f 3
+(2 * (1 * 1)) f 3
+3 * (2 * (1 * 1))
+3 * (2 * 1)
+3 * 2
+6
+#+END_EXAMPLE
+
+*** 3
+
+One difference between ~foldl~ and ~foldr~ is c) ~foldr~ associates to the right
+
+*** 4
+
+Folds are catamorphisms, which means they are generally used to a) reduce structure
+
+*** 5
+
+**** a
+#+BEGIN_SRC haskell
+foldr (++) [] ["woot", "WOOT", "woot"]
+#+END_SRC
+
+**** b
+#+BEGIN_SRC haskell
+foldr max ' ' "fear is the little death"
+#+END_SRC
+
+**** c
+#+BEGIN_SRC haskell
+foldr (&&) True [False, True]
+#+END_SRC
+
+**** d
+#+BEGIN_SRC haskell
+foldr (||) True [False, True]
+#+END_SRC
+
+Can never return anything other than True
+
+**** e
+#+BEGIN_SRC haskell
+foldl (flip ((++) . show)) "" [1..5]
+#+END_SRC
+
+**** f
+
+#+BEGIN_EXAMPLE
+foldr const 'a' [1..3]
+
+recall:
+  foldr (a -> b -> b) -> b -> t a -> b
+  for a = Int, b = Char
+
+  const :: Char -> Int -> Char
+
+  but we want (Int -> Char -> Char), so we flip const args
+#+END_EXAMPLE
+
+#+BEGIN_SRC haskell
+foldr (flip const) 'a' [1..3]
+#+END_SRC
+
+#+RESULTS[8aacd7905ce5c77a278f2f9f8e71b916bae5f58c]:
+: 'a'
+
+**** g
+Exactly like (f), the type of const is wrong for the identity and list types
+
+#+BEGIN_SRC haskell
+foldr (flip const) 0 "tacos"
+#+END_SRC
+
+#+RESULTS[7e48180fae2257c25f3c31bb3065910582253c7e]:
+: 0
+
+**** h
+#+BEGIN_EXAMPLE
+foldl (flip const) 0 "burritos"
+
+recall:
+  foldl :: (b -> a -> b) -> b -> [a] -> b
+            Int  Char Int   Int  Char   Int
+  for a = Char
+      b = Int
+
+our function needs to be (Int -> Char -> Int)
+but flip const here is (Int -> Char -> Char), so get rid of the flip
+#+END_EXAMPLE
+
+#+BEGIN_SRC haskell
+foldl const 0 "burritos"
+#+END_SRC
+
+#+RESULTS[3762b0b98c61e98e52e132a1adad6bd559fdec68]:
+: 0
+
+**** i
+#+BEGIN_EXAMPLE
+foldl (flip const) 'z' [1..5]
+
+same as above, we need the function to be (Int -> Char -> Int), but flip const here
+is Int -> Char -> Char
+#+END_EXAMPLE
+
+#+BEGIN_SRC haskell
+foldl const 'z' [1..5]
+#+END_SRC
+
+#+RESULTS[62b808733a4247098a8794d39f70004003863ed3]:
+: 'z'
