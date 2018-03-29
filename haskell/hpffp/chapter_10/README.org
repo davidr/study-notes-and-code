@@ -412,4 +412,52 @@ Use floating point division
 
 ** Rewriting functions using folds
 
-*** 1
+*** Example (myAnd)
+
+#+BEGIN_SRC haskell :tangle 10.10.myand.hs
+myAnd :: [Bool] -> Bool
+myAnd = foldr (\a b -> if a == False then False else b) True
+
+-- or completely pointfree
+
+myAnd' :: [Bool] -> Bool
+myAnd' = foldr (&&) True
+
+#+END_SRC
+
+
+*** 1. myOr
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myOr :: [Bool] -> Bool
+myOr = foldr (\a b -> if a == True then True else b) False
+
+-- or
+
+myOr' :: [Bool] -> Bool
+myOr' = foldr (||) False
+#+END_SRC
+
+*** 2. myAny
+Unless I'm missing something, this is basically like myOr, but we need to fold the
+value of the supplied function mapped onto the list of inputs. Since we're still using
+right-associative fold, it shouldn't evaluate any more of the cons cells than needed.
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny f = myOr . map f
+#+END_SRC
+
+*** 3. myElem
+Using folding:
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myElem :: Eq a => a -> [a] -> Bool
+myElem x = foldr (\a b -> if x == a then True else b) False
+#+END_SRC
+
+Using ~any~:
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myElemAny :: Eq a => a -> [a] -> Bool
+myElemAny x = any (== x)
+#+END_SRC
