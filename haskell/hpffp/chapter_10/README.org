@@ -220,38 +220,119 @@ foldl const 'z' [1..5]
     , DbNumber 9001
     , DbString "Hello, world!"
     , DbDate (UTCTime (fromGregorian 1921 5 1) (secondsToDiffTime 34123))
+    , DbNumber 42
     ]
 
-  -- Write a function that filters for DbDate values and returns a list of the UTCTime values
-  -- inside them
-  --
-  -- so, I guess we want a foldr function that pattern matches for DbDates and returns a list of
-  -- UTCTimes, so:
-  --   if we want foldr to return [UTCTime], then we need an invocation like:
-  --     foldr f [UTCTime] [DatabaseItem] = [UTCTime]
-  --   where:
-  --     f :: (DatabaseItem -> [UTCTime] -> [UTCTime])
+#+END_SRC
 
+*** 1
+
+Write a function that filters for DbDate values and returns a list of the UTCTime values inside them
+
+so, I guess we want a foldr function that pattern matches for DbDates and returns a list of
+UTCTimes, so:
+
+#+BEGIN_EXAMPLE
+  if we want foldr to return [UTCTime], then we need an invocation like:
+    foldr f [UTCTime] [DatabaseItem] = [UTCTime]
+  where:
+    f :: (DatabaseItem -> [UTCTime] -> [UTCTime])
+#+END_EXAMPLE
+
+#+BEGIN_SRC haskell :tangle database-processing.hs
   extractUTCTime :: DatabaseItem -> [UTCTime] -> [UTCTime]
   extractUTCTime (DbDate a) b = a : b
   extractUTCTime _          b = b
 
   filterDbDate :: [DatabaseItem] -> [UTCTime]
   filterDbDate db = foldr extractUTCTime [] db
+#+END_SRC
+
+*** 2
+
+Write a function that filters for DbNumber values and returns a list of the Integer values
+inside them
+
+Similarly, since we want a foldr evaluation that returns [Integer], we need:
+
+#+BEGIN_EXAMPLE
+foldr f [Integer] [DatabaseItem]
+where:
+f :: DatabaseItem -> [Integer] -> [Integer]
+#+END_EXAMPLE
 
 
-  -- Write a function that filters for DbNumber values and returns a list of the Integer values
-  -- inside them
-  --
-  -- Similarly, since we want a foldr evaluation that returns [Integer], we need:
-  --   foldr f [Integer] [DatabaseItem] = [Integer]
-  -- where:
-  --   f :: DatabaseItem -> [Integer] -> [Integer]
-
+#+BEGIN_SRC haskell :tangle database-processing.hs
   extractInteger :: DatabaseItem -> [Integer] -> [Integer]
   extractInteger (DbNumber a) b = a : b
   extractInteger _            b = b
 
   filterDbNumber :: [DatabaseItem] -> [Integer]
   filterDbNumber db = foldr extractInteger [] db
+#+END_SRC
+
+*** 3
+Write function that gets the most recent date
+
+Well, compare works for UTCTime elements, so I guess that's where we want to start, presumably
+with a foldr statement since that's the chapter we're in!
+
+Working backward with the definition of foldr, we want to have something like:
+
+#+BEGIN_EXAMPLE
+foldr f UTCTime [DatabaseItem]
+where:
+  f :: DatabaseItem -> UTCTime -> UTCTime (where this is the more recent time?)
+#+END_EXAMPLE
+
+So I started with this functon
+
+#+BEGIN_SRC haskell :tangle database-processing.hs
+  extractMostRecent :: DatabaseItem -> UTCTime -> UTCTime
+  extractMostRecent (DbDate a) b = if a > b then a else b
+  extractMostRecent _          b = b
+
+  myIdDate = (UTCTime (fromGregorian 0 1 1) (secondsToDiffTime 34123))
+
+  mostRecent' :: [DatabaseItem] -> UTCTime
+  mostRecent' db = foldr extractMostRecent myIdDate db
+#+END_SRC
+
+But it turns out that's dumb for a number of reasons:
+
+- first, since ~foldr~ takes something like an identity function, we have to do that stupid
+  myIdDate thing, which sets a default value for the foldr evaluation. This might be helpful
+  to make sure it works with [DatabaseItems] that don't include dbDate, but it's not really
+  what we want
+- since we know compare works, we should just use ~maximum~, duh..
+
+#+BEGIN_SRC haskell :tangle database-processing.hs
+  mostRecent :: [DatabaseItem] -> UTCTime
+  mostRecent = maximum . filterDbDate
+#+END_SRC
+
+*** 4
+Write a function that sums all of the dbnumber values
+
+Learning my lesson from above:
+
+#+BEGIN_SRC haskell :tangle database-processing.hs
+  sumDb :: [DatabaseItem] -> Integer
+  sumDb = sum . filterDbNumber
+#+END_SRC
+
+*** 5
+Write a function that takes the arithmetic mean of the DbNumber values
+
+#+BEGIN_SRC haskell :tangle database-processing.hs
+  avgDb' :: [DatabaseItem] -> Double
+  avgDb' db = (fromIntegral . sumDb $ db) / (fromIntegral . length . filterDbNumber $ db)
+
+  -- slightly prettier:
+
+  avgDb :: [DatabaseItem] -> Double
+  avgDb db = sumDbNumbers / numDbNumbers
+    where
+      sumDbNumbers = (fromIntegral . sumDb $ db)
+      numDbNumbers = (fromIntegral . length . filterDbNumber $ db)
 #+END_SRC

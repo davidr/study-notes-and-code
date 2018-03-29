@@ -11,17 +11,8 @@ theDatabase =
   , DbNumber 9001
   , DbString "Hello, world!"
   , DbDate (UTCTime (fromGregorian 1921 5 1) (secondsToDiffTime 34123))
+  , DbNumber 42
   ]
-
--- Write a function that filters for DbDate values and returns a list of the UTCTime values
--- inside them
---
--- so, I guess we want a foldr function that pattern matches for DbDates and returns a list of
--- UTCTimes, so:
---   if we want foldr to return [UTCTime], then we need an invocation like:
---     foldr f [UTCTime] [DatabaseItem] = [UTCTime]
---   where:
---     f :: (DatabaseItem -> [UTCTime] -> [UTCTime])
 
 extractUTCTime :: DatabaseItem -> [UTCTime] -> [UTCTime]
 extractUTCTime (DbDate a) b = a : b
@@ -30,18 +21,35 @@ extractUTCTime _          b = b
 filterDbDate :: [DatabaseItem] -> [UTCTime]
 filterDbDate db = foldr extractUTCTime [] db
 
-
--- Write a function that filters for DbNumber values and returns a list of the Integer values
--- inside them
---
--- Similarly, since we want a foldr evaluation that returns [Integer], we need:
---   foldr f [Integer] [DatabaseItem] = [Integer]
--- where:
---   f :: DatabaseItem -> [Integer] -> [Integer]
-
 extractInteger :: DatabaseItem -> [Integer] -> [Integer]
 extractInteger (DbNumber a) b = a : b
 extractInteger _            b = b
 
 filterDbNumber :: [DatabaseItem] -> [Integer]
 filterDbNumber db = foldr extractInteger [] db
+
+extractMostRecent :: DatabaseItem -> UTCTime -> UTCTime
+extractMostRecent (DbDate a) b = if a > b then a else b
+extractMostRecent _          b = b
+
+myIdDate = (UTCTime (fromGregorian 0 1 1) (secondsToDiffTime 34123))
+
+mostRecent' :: [DatabaseItem] -> UTCTime
+mostRecent' db = foldr extractMostRecent myIdDate db
+
+mostRecent :: [DatabaseItem] -> UTCTime
+mostRecent = maximum . filterDbDate
+
+sumDb :: [DatabaseItem] -> Integer
+sumDb = sum . filterDbNumber
+
+avgDb' :: [DatabaseItem] -> Double
+avgDb' db = (fromIntegral . sumDb $ db) / (fromIntegral . length . filterDbNumber $ db)
+
+-- slightly prettier:
+
+avgDb :: [DatabaseItem] -> Double
+avgDb db = sumDbNumbers / numDbNumbers
+  where
+    sumDbNumbers = (fromIntegral . sumDb $ db)
+    numDbNumbers = (fromIntegral . length . filterDbNumber $ db)
