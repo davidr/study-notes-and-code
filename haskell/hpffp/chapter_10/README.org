@@ -336,3 +336,80 @@ Write a function that takes the arithmetic mean of the DbNumber values
       sumDbNumbers = (fromIntegral . sumDb $ db)
       numDbNumbers = (fromIntegral . length . filterDbNumber $ db)
 #+END_SRC
+
+
+* 10.10 Chapter Exercises
+
+** Warm up and review:
+
+*** 1
+Given:
+
+#+BEGIN_EXAMPLE
+stops  = "pbtdkg"
+vowels = "aeiou"
+#+END_EXAMPLE
+
+**** a
+write a function that takes inputs from stops and vowels and makes 3-tuples of all possible stop-vowel-stop
+combinations
+
+#+BEGIN_SRC haskell
+  genStopCombos :: String -> String -> [(Char, Char, Char)]
+  genStopCombos ss vs = [(s1, v, s1) | s1 <- ss, v <- vs, s2 <- ss]
+#+END_SRC
+
+**** b
+Modify that function so that it only returns the combinations that begin with a ~p~
+
+#+BEGIN_SRC haskell
+  stops  = "pbtdkg"
+  vowels = "aeiou"
+
+  genStopPCombos :: String -> String -> [(Char, Char, Char)]
+  genStopPCombos ss vs = [(s1, v, s2) | s1 <- ss,
+                                        v  <- vs,
+                                        s2 <- ss,
+                                        s1 == 'p']
+#+END_SRC
+
+**** c
+Now set up lists of nouns and verbs and modify the function to make tuples representing noun-verb-noun
+combinations
+
+#+BEGIN_SRC haskell
+  nouns = ["person", "place", "thing", "house", "bird"]
+  verbs = ["add", "drop", "mix", "yawn"]
+
+  genNounVerbCombos :: [String] -> [String] -> (String, String, String)
+  genNounVerbCombos ns vs = [(n1, v, n2) | n1 <- ns,
+                                           v  <- vs,
+                                           n2 <- ns]
+#+END_SRC
+
+*** 2
+What does this function do?
+
+#+BEGIN_EXAMPLE
+seekritFunc x =
+  div (sum (map length (words x)))
+      (length (words x))
+#+END_EXAMPLE
+
+This takes a string, breaks it into words, and generates an average number of letters per word
+
+*** 3
+Use floating point division
+
+#+BEGIN_SRC haskell
+  avgWordLen :: String -> Double
+  avgWordLen s =
+    (fromIntegral lenWords) / (fromIntegral numWords)
+    where
+      lenWords = sum (map length (words s))
+      numWords = length (words s)
+#+END_SRC
+
+** Rewriting functions using folds
+
+*** 1
