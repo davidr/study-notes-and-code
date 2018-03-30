@@ -461,3 +461,66 @@ Using ~any~:
 myElemAny :: Eq a => a -> [a] -> Bool
 myElemAny x = any (== x)
 #+END_SRC
+
+*** 4. myReverse
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myReverse :: [a] -> [a]
+myReverse = foldl (flip (:)) []
+#+END_SRC
+
+*** 5. myMap
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myMap :: (a -> b) -> [a] -> [b]
+myMap f = foldr (\a -> (:) $ f a) []
+#+END_SRC
+
+*** 6. myFilter
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myFilter :: (a -> Bool) -> [a] -> [a]
+myFilter f = foldr (\x xs -> if f x then x : xs else xs) []
+#+END_SRC
+
+*** 7. squish
+
+I had real trouble with this one and had to cheat to find the answer. It's not clear to me
+why I can't use list constructors and have to use list concatenation
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+squish :: [[a]] -> [a]
+squish = foldr (\x y -> x ++ y) []
+#+END_SRC
+
+*** 8. squishMap
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap f = foldr (\x y -> f x ++ y) []
+#+END_SRC
+
+*** 9. squishAgain
+Rewrite ~squish~ but using ~squishMap~
+
+Since we know that each argument to squishMap is a list, id returns that list and it's
+concatenated onto a single list by squishMap
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+squishAgain :: [[a]] -> [a]
+squishAgain = squishMap id
+#+END_SRC
+
+*** 10. myMaximumBy
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy f (x:xs) = foldr (\a b -> if f a b == GT then a else b) x xs
+#+END_SRC
+
+*** 11. myMinimumBy
+
+#+BEGIN_SRC haskell :tangle 10.10.foldfunctions.hs
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy f (x:xs) = foldr (\a b -> if f a b == LT then a else b) x xs
+#+END_SRC
