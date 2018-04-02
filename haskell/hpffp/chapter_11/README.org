@@ -1,0 +1,131 @@
+#+TITLE: Haskell Programming from First Principles Chapter 11 notes/answers
+#+NAME: David Ressman
+#+EMAIL: davidr@ressman.org
+#+LANGUAGE: en
+#+STARTUP: indent
+#+OPTIONS: num:nil toc:1
+#+PROPERTY: header-args:haskell :cache yes :results verbatim :exports both
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" />
+
+Chapter 11, Algebraic Data Types
+
+* 11.5 Data constructors and values
+
+#+BEGIN_SRC haskell :tangle dogtypes.hs
+  module Chap11Dogs where
+
+  data PugType           = PugData
+  --   [1]                 [2]
+  -- 1. PugType type constructor with no args
+  -- 2. sole data constructor for type PugType (constant value)
+
+  data HuskyType a       = HuskyData
+  --   [3]                 [4]
+  -- 3. type constructor, taking single parametrically polymorphic
+
+  data DogeBordeaux doge = DogeBordeaux doge
+  --   [5]                 [6]
+
+
+  data Doggies a =
+      Husky a
+    | Mastiff a
+    deriving (Eq, Show)
+#+END_SRC
+
+** Exercises: Dog Types
+
+Given the above datatypes:
+
+*** 1.
+Doggies is a type constructor
+
+*** 2.
+~* -> *~
+
+*** 3.
+Doggies String :: *
+
+*** 4.
+Husky 10 :: Num a => Doggies a
+
+*** 5.
+Husky (10 :: Integer) :: Doggies Integer
+
+*** 6.
+Mastiff "Scoobie Doo" :: [Char] a => Doggies a
+
+*** 7.
+DogeBordeaux is both a type and data constructor
+
+*** 8.
+DogeBordeaux :: doge -> DogeBordeaux doge
+
+*** 9.
+DogeBordeaux "doggie!" :: DogeBordeaux [Char]
+
+* 11.6 What's a type and what's data?
+
+#+BEGIN_SRC haskell :tangle 11.6.datatypes.hs
+module Chap116DataTypes where
+
+data Price = Price Integer deriving (Eq, Show)
+--   (a)     (b)   [1]
+--
+-- For: a - type constructor
+--      b - data constructor
+--      1 - type argument
+
+data Manufacturer = Mini | Mazda | Tata deriving (Eq, Show)
+--                  (a)    (b)     (c)
+--
+-- For: a, b, c - data constructors
+
+data Airline = PapuAir | CatapultsR'Us | TakeYourChancesUnited deriving (Eq, Show)
+
+data Vehicle = Car Manufacturer Price | Plane Airline deriving (Eq, Show)
+--             (a) [1]          [2]     (b)   [3]
+--
+-- For: 1, 2, 3 - type arguments
+
+myCar    = Car Mini (Price 14000)
+urCar    = Car Mazda (Price 20000)
+clownCar = Car Tata (Price 7000)
+doge     = Plane PapuAir
+#+END_SRC
+
+** Exercises: Vehicles
+
+*** 1
+#+BEGIN_SRC haskell
+myCar :: Vehicle
+#+END_SRC
+
+*** 2
+
+#+BEGIN_SRC haskell :tangle 11.6.datatypes.hs
+isCar :: Vehicle -> Bool
+isCar (Car _ _) = True
+isCar _         = False
+
+isPlane :: Vehicle -> Bool
+isPlane (Plane _) = True
+isPlane _         = False
+
+areCars :: [Vehicle] -> [Bool]
+areCars = map isCar
+#+END_SRC
+
+*** 3
+
+#+BEGIN_SRC haskell :tangle 11.6.datatypes.hs
+getManu :: Vehicle -> Manufacturer
+getManu (Plane _) = error "Plane has no manufacturer"
+getManu (Car x _) = x
+#+END_SRC
+
+*** 4
+It throws an error on Plane data
+
+*** 5
+left as an exercise to the less lazy
