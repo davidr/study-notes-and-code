@@ -129,3 +129,128 @@ It throws an error on Plane data
 
 *** 5
 left as an exercise to the less lazy
+* 11.7 Data constructor arities
+
+The /arity/ refers to the number of arguments a function or constructor takes. A function that takes
+no arguments is a /nullary/. Data constructors that take no arguments are also /nullary/, like True,
+False, etc.
+
+/Reminder/: A type can be thought of as an enumeration of constructors that have zero or /more/
+arguments.
+
+Data constructors that take one argument are /unary/. Data constructors that take *more* than one
+argument are called /products/.
+
+See:
+
+#+BEGIN_SRC haskell
+  -- nullary
+  data Example0 = Example0 deriving (Eq, Show)
+
+  -- unary
+  data Example1 = Example1 Int deriving (Eq, Show)
+
+  -- product of Int and String
+  data Example2 = Example2 Int String deriving (Eq, Show)
+#+END_SRC
+
+* 11.8 What makes these datatypes algebraic?
+
+The book says "Algebraic datatypes in Haskell are algebraic because we can describe the
+patterns of argument structures using two basic operations: sum and product." I think this
+reduces to the mathematical definition of an algebra over a field.
+
+This definition will apparently make sense with respect to the cardinality of the arguments.
+
+Take ~Bool~. It has two possible values, so its cardinality is 2. With ~Int8~'s cardinality
+is 256.
+
+** Exercises: Cardinality
+
+*** 1
+cardinality of ~data Pugtype = PugData~ is 1
+
+*** 2
+cardinality of ~data Airline = PapuAir | CatapultsR'Us | TakeYourChancesUnited~ is 3
+
+*** 3
+cardinality of ~Int16~ is 65,536
+
+*** 4
+#+BEGIN_SRC haskell
+import Data.Int
+maxBound :: Int
+#+END_SRC
+
+#+RESULTS[7d5c290c7c049df66b98f5b17a02a940ce080b40]:
+: 9223372036854775807
+
+so ~Int~ looks to be 64 bit with cardinality of \~1.8e19
+
+#+BEGIN_SRC haskell
+import Data.Int
+maxBound :: Integer
+#+END_SRC
+
+#+RESULTS[c93e9d878bdf0a25748a2dc12203a15cf16d25b9]:
+: <interactive>:17:1: error:
+:     • No instance for (Bounded Integer)
+:         arising from a use of ‘maxBound’
+:     • In the expression: maxBound :: Integer
+:       In an equation for ‘it’: it = maxBound :: Integer
+
+I'm guessing this means that Integer is an infinite set.
+
+*** 5
+2^8 = 256
+
+** Exercises: For example
+
+Given:
+
+#+BEGIN_SRC haskell
+data Example = MakeExample deriving Show
+#+END_SRC
+
+
+*** 1
+#+BEGIN_SRC haskell
+:t MakeExample
+#+END_SRC
+
+#+RESULTS[4105eaa7259112617b5029ca979892b870c29c5b]:
+: MakeExample :: Example
+
+#+BEGIN_SRC haskell
+:t Example
+#+END_SRC
+
+#+RESULTS[1483403d966005a13fc08fa09ae9bc1f05db2645]:
+: <interactive>:1:1: error:
+:     • Data constructor not in scope: Example
+:     • Perhaps you meant one of these:
+:         ‘Example0’ (line 2), ‘Example1’ (line 5), ‘Example2’ (line 8)
+
+Which seems reasonable since the type of a type constructor doesn't make sense
+
+*** 2
+#+BEGIN_SRC haskell
+:info Example
+#+END_SRC
+
+#+RESULTS[45bad130f60b32db3653061c6e5c06e72b90c930]:
+: data Example = MakeExample 	-- Defined at <interactive>:19:1
+: instance [safe] Show Example -- Defined at <interactive>:19:37
+
+we only have the ~Show~ instance defined
+
+*** 3
+#+BEGIN_SRC haskell
+data Example' = MakeExample' Int deriving Show
+:t MakeExample'
+#+END_SRC
+
+#+RESULTS[1393c73efd88e47692a558e32dfb1b53a47f9ff8]:
+: MakeExample' :: Int -> Example'
+
+We changed it from a nullary to a unary constructor
