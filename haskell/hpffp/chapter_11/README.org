@@ -254,3 +254,137 @@ data Example' = MakeExample' Int deriving Show
 : MakeExample' :: Int -> Example'
 
 We changed it from a nullary to a unary constructor
+
+* 11.9 newtype
+
+A ~newtype~ is converted into the type it contains by the compiler.
+
+#+BEGIN_SRC haskell
+newtype Goats = Goats Int deriving (Eq, Show)
+#+END_SRC
+
+/Note:/ If it's converted into the contained type, why is the ~deriving (Eq, Show)~ necessary?
+
+Compared to a /type alias/ you can define typeclass instances for ~newtype~ s that differ from
+the instances of their underlying type.
+
+Ex:
+
+#+BEGIN_SRC haskell
+newtype Goats = Goats Int deriving Show
+
+instance TooMany Goats where
+  tooMany (Goats n) = n > 43
+#+END_SRC
+
+There's a pragma that can allow you to use user-defined typeclasses without having to write
+them for every newtype, e.g.
+
+#+BEGIN_SRC haskell :tangle 11.9.newtype-goats.hs
+  {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+  class TooMany a where
+    tooMany :: a -> Bool
+
+  instance TooMany Int where
+    tooMany n = n > 42
+
+  newtype Goats = Goats Int deriving (Eq, Show, TooMany)
+#+END_SRC
+
+** Exercises: Logic goats
+
+*** 1
+
+#+BEGIN_SRC haskell :tangle 11.9.newtype-goats.hs
+newtype Goats' = Goats' (Int, String) deriving (Eq, Show)
+
+instance TooMany Goats' where
+  tooMany (Goats' (n, _)) = n > 42
+#+END_SRC
+
+*** 2
+
+#+BEGIN_SRC haskell :tangle 11.9.newtype-goats.hs
+newtype Goats'' = Goats'' (Int, Int) deriving (Eq, Show)
+
+instance TooMany Goats'' where
+  tooMany (Goats'' (n, m)) = n + m > 42
+#+END_SRC
+
+*** 3
+wat
+
+This doesn't work. I'm not sure how to do this with newtype.
+
+/Todo:/ figure this out
+
+#+BEGIN_SRC haskell :tangle 11.9.newtype-goats.hs
+-- newtype WatGoats = WatGoats (Num a, TooMany a) deriving (Eq, Show)
+#+END_SRC
+
+* 11.10 Sum types
+
+Note that ~|~ or /OR/ is the sum function for algebraic datatypes, so to calculate the cardinality
+of ~Bool~,
+
+#+BEGIN_EXAMPLE
+-- excuse the abuse of notation
+
+card(True) + card(False)
+1          + 1
+2
+#+END_EXAMPLE
+
+To verify:
+
+#+BEGIN_SRC haskell
+length (enumFrom False)
+#+END_SRC
+
+#+RESULTS[8b2e4463db2a489a0d1857ce95a499d9e058ca5b]:
+: 2
+
+** Exercises: Pity the bool
+
+*** 1
+The cardinality of ~BigSmall~ is 4
+
+*** 2
+The cardinality of ~NumberOrBool~ is 258
+
+* 11.11 Product types
+
+A product type's cardinality is the product of the cardinalities of its inhabitants. Where the
+sum type was expressing /OR/, the product type expresses /AND/.
+
+A product type is analogous to a C struct
+
+/Records/ are product types with additional syntax to provide accessors to fields within
+
+Compare:
+
+#+BEGIN_SRC haskell
+  data Person = MkPerson String Int deriving (Eq, Show)
+
+  -- sample data
+  jm = MkPerson "julie" 108
+  ca = MkPerson "chris" 16
+
+  namae :: Person -> String
+  namae (MkPerson s _) = s
+#+END_SRC
+
+With:
+
+#+BEGIN_SRC haskell
+  data Person = Person {name :: String, age :: Int } deriving (Eq, Show)
+
+  papu = Person "Papu" 5
+  (name papu, age papu)
+#+END_SRC
+
+#+RESULTS[c2673d83803b9468d5bfa4960e857d898adacb7a]:
+: Prelude> Prelude> ("Papu",5)
+
+* 11.12 Normal form
