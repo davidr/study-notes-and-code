@@ -388,3 +388,61 @@ With:
 : Prelude> Prelude> ("Papu",5)
 
 * 11.12 Normal form
+
+/Note:/ we're talking about algebra, so the distributive property applies:
+
+#+BEGIN_SRC haskell :tangle 11.12.booktype01.hs
+  -- two datatypes, with single, nullary inhabitants
+  data Fiction = Fiction deriving Show
+  data Nonfiction = Nonfiction deriving Show
+
+  data BookType = FictionBook Fiction
+                  | NonfictionBook Nonfiction
+                  deriving Show
+
+  type AuthorName = String
+
+  data Author = Author (AuthorName, BookType)
+
+#+END_SRC
+
+Equivalently:
+
+#+BEGIN_SRC haskell :tangle 11.12.booktype02.hs
+  type AuthorName = String
+
+  data Author = Fiction AuthorName
+              | Nonfiction AuthorName
+              deriving (Eq, Show)
+#+END_SRC
+
+~BookType~ is distributed over the sum. It is now in /normal form/
+
+** Exercises: How does your garden grow?
+
+*** 1
+#+BEGIN_SRC haskell :tangle 11.12.ex1.hs
+  data FlowerType = Gardenia
+                  | Daisy
+                  | Rose
+                  | Lilac
+                  deriving Show
+
+  type Gardener = String
+
+  data Garden = Garden Gardener FlowerType deriving Show
+#+END_SRC
+
+Reduces to:
+
+#+BEGIN_SRC haskell :tangle 11.12.ex2.hs
+  type Gardener = String
+
+  data Garden = Gardenia Gardener
+              | Daisy Gardener
+              | Rose Gardener
+              | Lilac Gardener
+              deriving Show
+#+END_SRC
+
+* 11.13 Constructing and deconstructing values
